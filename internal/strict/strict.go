@@ -47,6 +47,8 @@ const (
 	DisableLogFormatting = "terragrunt-disable-log-formatting"
 	// JSONLog is the control that prevents the deprecated `--terragrunt-json-log` flag from being used.
 	JSONLog = "terragrunt-json-log"
+	// RootTerragruntHCL is the control that prevents usage of a `terragrunt.hcl` file as the root of Terragrunt configurations.
+	RootTerragruntHCL = "root-terragrunt-hcl"
 )
 
 // GetStrictControl returns the strict control with the given name.
@@ -121,6 +123,10 @@ var StrictControls = Controls{
 	JSONLog: {
 		Error:   errors.Errorf("The `--%s` flag is no longer supported. Use `--terragrunt-log-format=json` instead.", JSONLog),
 		Warning: fmt.Sprintf("The `--%s` flag is deprecated and will be removed in a future version. Use `--terragrunt-log-format=json` instead.", JSONLog),
+	},
+	RootTerragruntHCL: {
+		Error:   errors.Errorf("Using `terragrunt.hcl` as the root of Terragrunt configurations is an anti-pattern, and no longer supported. Use a differently named file like `root.hcl` instead. For more information, see https://terragrunt.gruntwork.io/docs/reference/built-in-functions/#find_in_parent_folders"),
+		Warning: "Using `terragrunt.hcl` as the root of Terragrunt configurations is an anti-pattern, and no longer recommended. In a future version of Terragrunt, this will result in an error. You are advised to use a differently named file like `root.hcl` instead. For more information, see https://terragrunt.gruntwork.io/docs/reference/built-in-functions/#find_in_parent_folders",
 	},
 }
 
