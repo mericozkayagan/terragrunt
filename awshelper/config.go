@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/gruntwork-io/go-commons/version"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -355,6 +356,25 @@ func GetAWSPartition(config *AwsSessionConfig, terragruntOptions *options.Terrag
 	}
 
 	return arn.Partition, nil
+}
+
+// GetAWSAccountAlias gets the AWS account Alias of the current session configuration, in case of failure fallback to AWS Account ID.
+func GetAWSAccountAlias(config *AwsSessionConfig, terragruntOptions *options.TerragruntOptions) (string, error) {
+	sess, err := CreateAwsSession(config, terragruntOptions)
+	if err != nil {
+		return "", errors.New(err)
+	}
+
+	aliases, err := iam.New(sess).ListAccountAliases(nil)
+	if err != nil {
+		return "", errors.New(err)
+	}
+
+	if len(aliases.AccountAliases) > 0 {
+		return *aliases.AccountAliases[0], nil
+	}
+
+	return GetAWSAccountID(config, terragruntOptions)
 }
 
 // GetAWSAccountID gets the AWS account ID of the current session configuration.
